@@ -1,28 +1,60 @@
 package hu.radam.blackbelttest.model;
+import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 
+/**
+ * Customer entity
+ * <p>
+ *     Hibernate POJO class. Stores the Customer data
+ * </p>
+ */
+@Entity
 public class Customer {
-    private String _name;
 
-    private Vector _rentals = new Vector();
-    
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
+    private String name;
+    //private Vector rentals = new Vector();
+    @OneToMany
+    private List<Rental> rentals = new ArrayList<>();
+
+    public Customer(){}
     public Customer(String name) {
-        _name = name;
+        this.name = name;
     }
 
+    /**
+     *
+     * @param arg type: Rental. You can add a Rental to a Customer.
+     */
     public void addRental(Rental arg) {
-        _rentals.addElement(arg);
+        rentals.add(arg);
     }
 
+    /**
+     *
+     * @return the name of the Customer
+     */
     public String getName() {
-        return _name;
+        return name;
     }
 
-    public String statement() {
+    /**
+     *
+     * @return the id of the Customer.
+     */
+    public Integer getId() {
+        return id;
+    }
+
+    /* public String statement() {
         double totalAmount = 0;
         int frequentRenterPoints = 0;
-        Enumeration rentals = _rentals.elements();
+        Enumeration rentals = this.rentals.elements();
         String result = "Rental Record for " + getName() + "\n";
         while (rentals.hasMoreElements()) {
             double thisAmount = 0;
@@ -66,5 +98,5 @@ public class Customer {
         result += "You earned " + String.valueOf(frequentRenterPoints) +
                 " frequent renter points";
         return result;
-    }
+    }*/
 }
