@@ -1,10 +1,13 @@
 package hu.radam.blackbelttest.service;
 
-import hu.radam.blackbelttest.model.Movie;
-import hu.radam.blackbelttest.model.Rental;
+import hu.radam.blackbelttest.model.*;
+import hu.radam.blackbelttest.repository.CustomerRepo;
 import hu.radam.blackbelttest.repository.RentalRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *  Fetch the Rentals and calculate the amounts
@@ -13,10 +16,13 @@ import org.springframework.stereotype.Service;
 public class RentalService {
 
     private RentalRepo rentalRepo;
+    private CustomerRepo customerRepo;
+    private double customerAmount;
 
     @Autowired
-    private void setRentalRepo(RentalRepo rentalRepo){
+    private void setRepos(RentalRepo rentalRepo, CustomerRepo customerRepo){
         this.rentalRepo = rentalRepo;
+        this.customerRepo = customerRepo;
     }
 
     /**
@@ -29,40 +35,99 @@ public class RentalService {
             return rentalRepo.findById(id).get();
         }catch(Exception e){
             System.err.println(e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }
 
     /**
-     * Calculates the amount of a Rental.
-     * @param rental The rental for the calculation.
-     * @return the calculated amount.
+     *
+     * @param id the id of the wanted Customer.
+     * @return the Customer based on the id param.
      */
-    public double statement(Rental rental){
+    public Customer findCustomerById(int id){
         try{
-            double thisAmount = 0;
-            switch (rental.getMovie().getPriceCode()) {
-                case Movie.REGULAR:
-                    thisAmount += 2;
-                    if (rental.getDaysRented() > 2) {
-                        thisAmount += (rental.getDaysRented() - 2) * 1.5;
-                    }
-                    break;
-                case Movie.NEW_RELEASE:
-                    thisAmount += rental.getDaysRented() * 3;
-                    break;
-                case Movie.CHILDRENS:
-                    thisAmount += 1.5;
-                    if (rental.getDaysRented() > 3) {
-                        thisAmount += (rental.getDaysRented() - 3) * 1.5;
-                    }
-                    break;
-            }
-            return thisAmount;
+            return customerRepo.findById(id).get();
         }catch(Exception e){
             System.err.println(e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     *
+     * @param rentals List of Rentals.
+     * @return the response object, witch contains a list of rentals and the amounts of the rentals.
+     */
+    public List<RentalHelper> statement(List<Rental> rentals){
+        List<RentalHelper> responseObject = new ArrayList<>();
+        try{
+            for (Rental rental :
+                    rentals) {
+                RentalHelper rentalHelper = new RentalHelper(rental, rental.getMovie().getAmount(rental.getDaysRented()));
+                responseObject.add(rentalHelper);
+            }
+            return responseObject;
+        }catch(Exception e){
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     *
+     * @param rentals List of Rentals.
+     * @return the total amount of a list of Rentals.
+     */
+    public double customerStatement(List<Rental> rentals){
+        try{
+            customerAmount = 0;
+            for (Rental rental :
+                    rentals) {
+                customerAmount += rental.getMovie().getAmount(rental.getDaysRented());
+            }
+            return customerAmount;
+        }catch(Exception e){
+            System.err.println(e.getMessage());
+            e.printStackTrace();
             return 0;
         }
+    }
+
+    /**
+     *
+     * @param customerId id of a Customer.
+     * @return a list of Rentals based on a customer id.
+     */
+    public List<Rental> findByCustomer(Integer customerId){
+        try{
+            Customer customer = findCustomerById(customerId);
+            List<Rental> rentals = rentalRepo.findByCustomer(customer);
+            return rentals;
+        }catch (Exception e){
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     *
+     * @param rentals list of Rentals.
+     * @return the amount of frequent points based on a list of Rentals.
+     */
+    public Integer frequentRenterPoints(List<Rental> rentals){
+        Integer points = 0;
+        for (Rental rental :
+                rentals) {
+            points++;
+            if (rental.getMovie() instanceof NewRealeaseMovie && rental.getDaysRented() > 1) {
+                points++;
+            }
+            }
+        return points;
     }
 
 }

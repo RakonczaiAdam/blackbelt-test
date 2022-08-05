@@ -6,9 +6,37 @@
 </head>
 <body>
     <h1>Customer receipt:</h1>
+    <h3 th:text="${customer.name}"></h3>
     <hr size="2">
-    <div>
+    <div th:each="obj: ${responseObject}">
+        <table class="table" style="border: 1px solid black;">
+            <tr>
+                <td>Days rented: </td>
+                <td th:text="${obj.rental.daysRented}"></td>
+            </tr>
 
+            <tr>
+                <td>Movie title: </td>
+                <td th:text="${obj.rental.movie.title}"></td>
+            </tr>
+
+           <tr>
+               <td>Rental amount: </td>
+               <td th:text="${obj.amount}"></td>
+           </tr>
+        </table>
+        <br>
     </div>
+    <hr size="2">
+    <table>
+        <tr>
+            <td>Frequent renter points: </td>
+            <td th:text="${frequentRenterPoints}"></td>
+        </tr>
+        <tr>
+            <td>Total amount: </td>
+            <td th:text="${customerAmount}"></td>
+        </tr>
+    </table>
 </body>
 </html>

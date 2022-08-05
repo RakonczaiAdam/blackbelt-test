@@ -1,12 +1,15 @@
 package hu.radam.blackbelttest.controller;
 
 import hu.radam.blackbelttest.model.Rental;
+import hu.radam.blackbelttest.model.RentalHelper;
 import hu.radam.blackbelttest.service.RentalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 /**
  * Rental receipt controller
@@ -43,7 +46,7 @@ public class Controller {
         if(rental == null)
             return "noSuchReceipt";
         model.addAttribute("rental", rental);
-        model.addAttribute("amount", rentalService.statement(rental));
+        model.addAttribute("amount", rental.getMovie().getAmount(rental.getDaysRented()));
         model.addAttribute("movie", rental.getMovie());
         model.addAttribute("customer", rental.getCustomer());
         return "rental";
@@ -57,6 +60,14 @@ public class Controller {
      */
     @GetMapping("/customer/{customerId}")
     public String customer(@PathVariable Integer customerId, Model model){
+        List<Rental> rentals = rentalService.findByCustomer((customerId));
+        if(rentals == null)
+            return "noSuchReceipt";
+        List<RentalHelper> rentalHelpers =  rentalService.statement(rentals);
+        model.addAttribute("responseObject",rentalHelpers);
+        model.addAttribute("customer", rentalService.findCustomerById(customerId));
+        model.addAttribute("customerAmount", rentalService.customerStatement(rentals));
+        model.addAttribute("frequentRenterPoints", rentalService.frequentRenterPoints(rentals));
         return "customer";
     }
 

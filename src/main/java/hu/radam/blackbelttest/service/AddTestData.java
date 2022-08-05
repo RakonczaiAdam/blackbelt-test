@@ -47,19 +47,12 @@ public class AddTestData implements CommandLineRunner {
      */
     private void saveMovies(){
         List<Movie> movies = new ArrayList<Movie>();
-
         movies.add(new ChildrensMovie("Harry Potter"));
         movies.add(new RegularMovie("Lord Of The Rings"));
         movies.add(new RegularMovie("Kill Bill"));
         movies.add(new NewRealeaseMovie("The Gentlemen"));
         movies.add(new NewRealeaseMovie("Interstellar"));
         movies.add(new ChildrensMovie("Shrek"));
-       /* movies.add(new Movie("Harry Potter", 2));
-        movies.add(new Movie("Lord Of The Rings", 0));
-        movies.add(new Movie("Kill Bill", 0));
-        movies.add(new Movie("The Gentlemen", 1));
-        movies.add(new Movie("Interstellar", 1));
-        movies.add(new Movie("Shrek", 2));*/
         movies.forEach((Movie movie) -> {
             Movie added = movieRepo.save(movie);
             System.out.println(added.getTitle());
@@ -79,7 +72,7 @@ public class AddTestData implements CommandLineRunner {
         customers.add(new Customer("Kovács István"));
         customers.forEach((Customer customer) -> {
             Customer added = customerRepo.save(customer);
-            System.out.println(added.getName());
+            System.out.println(added.getId()+" - "+added.getName());
         });
     }
 
@@ -92,8 +85,7 @@ public class AddTestData implements CommandLineRunner {
         movies.forEach((Movie movie)->{
             for(int i = 1; i <= 24; i++){
                 Rental rental = rentalRepo.save(new Rental(movie, i, customers.get(i%6)));
-                //customers.get(i%6).addRental(rental);
-                System.out.println(rental.getId()+" - days rented: "+rental.getDaysRented()+", movie: "+rental.getMovie().getTitle());
+                System.out.println(rental.getId()+" - days rented: "+rental.getDaysRented()+", movie: "+rental.getMovie().getTitle()+", customer: "+ rental.getCustomer().getName());
             }
         });
 

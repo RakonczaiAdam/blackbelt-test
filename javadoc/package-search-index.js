@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"hu.radam.blackbelttest"},{"l":"hu.radam.blackbelttest.controller"},{"l":"hu.radam.blackbelttest.model"},{"l":"hu.radam.blackbelttest.repository"},{"l":"hu.radam.blackbelttest.service"}]
